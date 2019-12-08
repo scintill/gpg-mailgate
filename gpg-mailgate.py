@@ -606,17 +606,21 @@ def get_first_payload( payloads ):
 
 def send_msg( message, recipients ):
 
-	recipients = filter(None, recipients)
-	if recipients:
-		if not (get_bool_from_cfg('relay', 'host') and get_bool_from_cfg('relay', 'port')):
-			log("Missing settings for relay. Sending email aborted.")
-			return None
-		log("Sending email to: <%s>" % '> <'.join( recipients ))
-		relay = (cfg['relay']['host'], int(cfg['relay']['port']))
-		smtp = smtplib.SMTP(relay[0], relay[1])
-		smtp.sendmail( from_addr, recipients, message )
+	if (not 'send_mode' in cfg['default']) or (cfg['default']['send_mode'] == 'smtp'):
+		recipients = filter(None, recipients)
+		if recipients:
+			if not (get_bool_from_cfg('relay', 'host') and get_bool_from_cfg('relay', 'port')):
+				log("Missing settings for relay. Sending email aborted.")
+				return None
+			log("Sending email to: <%s>" % '> <'.join( recipients ))
+			relay = (cfg['relay']['host'], int(cfg['relay']['port']))
+			smtp = smtplib.SMTP(relay[0], relay[1])
+			smtp.sendmail( from_addr, recipients, message )
+		else:
+			log("No recipient found")
 	else:
-		log("No recipient found")
+		print message
+
 
 def sort_recipients( raw_message, from_addr, to_addrs ):
 
