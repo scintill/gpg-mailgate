@@ -25,7 +25,7 @@ import random
 import string
 
 def private_keys( keyhome ):
-	cmd = ['/usr/bin/gpg', '--homedir', keyhome, '--list-secret-keys', '--with-colons']
+	cmd = ['gpg', '--homedir', keyhome, '--list-secret-keys', '--with-colons']
 	p = subprocess.Popen( cmd, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
 	p.wait()
 	keys = dict()
@@ -39,7 +39,7 @@ def private_keys( keyhome ):
 	return keys
 
 def public_keys( keyhome ):
-	cmd = ['/usr/bin/gpg', '--homedir', keyhome, '--list-keys', '--with-colons']
+	cmd = ['gpg', '--homedir', keyhome, '--list-keys', '--with-colons']
 	p = subprocess.Popen( cmd, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
 	p.wait()
 	keys = dict()
@@ -64,7 +64,7 @@ def confirm_key( content, email ):
 	os.mkdir(tmpkeyhome)
 	localized_env = os.environ.copy()
 	localized_env["LANG"] = "C"
-	p = subprocess.Popen( ['/usr/bin/gpg', '--homedir', tmpkeyhome, '--import', '--batch'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=localized_env )
+	p = subprocess.Popen( ['gpg', '--homedir', tmpkeyhome, '--import', '--batch'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=localized_env )
 	result = p.communicate(input=content)[1]
 	confirmed = False
 
@@ -83,7 +83,7 @@ def confirm_key( content, email ):
 
 # adds a key and ensures it has the given email address
 def add_key( keyhome, content ):
-	p = subprocess.Popen( ['/usr/bin/gpg', '--homedir', keyhome, '--import', '--batch'], stdin=subprocess.PIPE, stdout=subprocess.PIPE,stderr=subprocess.PIPE )
+	p = subprocess.Popen( ['gpg', '--homedir', keyhome, '--import', '--batch'], stdin=subprocess.PIPE, stdout=subprocess.PIPE,stderr=subprocess.PIPE )
 	p.communicate(input=content)
 	p.wait()
 
@@ -93,7 +93,7 @@ def delete_key( keyhome, email ):
 
 	if result[1]:
 		# delete all keys matching this email address
-		p = subprocess.Popen( ['/usr/bin/gpg', '--homedir', keyhome, '--delete-key', '--batch', '--yes', result[1]], stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+		p = subprocess.Popen( ['gpg', '--homedir', keyhome, '--delete-key', '--batch', '--yes', result[1]], stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
 		p.wait()
 		return True
 
@@ -117,7 +117,7 @@ class GPGEncryptor:
 		return (encdata, p.returncode)
 
 	def _command(self):
-		cmd = ["/usr/bin/gpg", "--trust-model", "always", "--homedir", self._keyhome, "--batch", "--yes", "--pgp7", "--no-secmem-warning", "-a", "-e"]
+		cmd = ["gpg", "--trust-model", "always", "--homedir", self._keyhome, "--batch", "--yes", "--pgp7", "--no-secmem-warning", "-a", "-e"]
 
 		# add recipients
 		for recipient in self._recipients:
@@ -145,6 +145,6 @@ class GPGDecryptor:
 		return (decdata, p.returncode)
 
 	def _command(self):
-		cmd = ["/usr/bin/gpg", "--trust-model", "always", "--homedir", self._keyhome, "--batch", "--yes", "--no-secmem-warning", "-a", "-d"]
+		cmd = ["gpg", "--trust-model", "always", "--homedir", self._keyhome, "--batch", "--yes", "--no-secmem-warning", "-a", "-d"]
 
 		return cmd

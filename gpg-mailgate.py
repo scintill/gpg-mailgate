@@ -39,9 +39,9 @@ import traceback
 from M2Crypto import BIO, Rand, SMIME, X509
 from email.mime.message import MIMEMessage
 
-# Read configuration from /etc/gpg-mailgate.conf
+# Read configuration
 _cfg = RawConfigParser()
-_cfg.read('/etc/gpg-mailgate.conf')
+_cfg.read(os.getenv('GPG_MAILGATE_CONFIG', '/etc/gpg-mailgate.conf'))
 cfg = dict()
 for sect in _cfg.sections():
 	cfg[sect] = dict()
