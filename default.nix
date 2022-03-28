@@ -1,4 +1,4 @@
-{ stdenv, python2, python2Packages,
+{ stdenv, lib, python2, python2Packages,
 gnupg1, config, writeText, makeWrapper }:
 let
 configFile = writeText "mailgate.conf" ((builtins.readFile ./gpg-mailgate.conf.sample) + config);
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
 		patchShebangs $BIN
 		wrapProgram $BIN \
 			--set PYTHONPATH "$PYTHONPATH:$out/lib/python" \
-			--set PATH "${stdenv.lib.makeBinPath [ gnupg1 ]}" \
+			--set PATH "${lib.makeBinPath [ gnupg1 ]}" \
 			--set GPG_MAILGATE_CONFIG ${configFile}
 	'';
 }
